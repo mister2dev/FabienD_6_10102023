@@ -4,10 +4,12 @@ const mongoose = require('mongoose');
 
 const path = require('path');
 
+require('dotenv').config();
+
 const sauceRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
 
-mongoose.connect('mongodb+srv://h2gveille:OoqlAZk6N6xUrmJz@cluster0.vpaxce7.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGODB_URI,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -15,6 +17,11 @@ mongoose.connect('mongodb+srv://h2gveille:OoqlAZk6N6xUrmJz@cluster0.vpaxce7.mong
 
 
 const app = express();
+
+const helmet = require('helmet');
+
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
