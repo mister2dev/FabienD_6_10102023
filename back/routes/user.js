@@ -8,4 +8,5 @@ const checkEmail = require("../middleware/email-validator");
 router.post('/signup', checkEmail, checkPassword, userCtrl.signup);
 router.post('/login', userCtrl.login);
 
+
 module.exports = router;
