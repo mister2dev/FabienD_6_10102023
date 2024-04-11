@@ -1,3 +1,15 @@
+# PIIQUANTE
+
+## Projet 6 du parcours Développeur Web d'Openclassrooms.
+
+Le client, la marque de condiments à base de piment Piiquante, veut développer une application web de critique des sauces piquantes appelée « Hot Takes ».
+
+![Image du site](back/images/sample.png)
+
+## Objectifs
+
+
+
 # HotTakes
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.4.
