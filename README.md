@@ -31,7 +31,7 @@ Le client, la marque de condiments à base de piment Piiquante, veut développer
 ## Note technique
 
 - La partie front a été créé avec angular CLI version 13.2.4. 
-- Angular a du être mis à jour pour être compatible avec la version node disponible sur le moment. Voici la liste des versions des dépendances à utiliser pour faire fonctionner le projet :
+- Angular a dû être mis à jour pour être compatible avec la version node disponible sur le moment. Voici la liste des versions des dépendances à utiliser pour faire fonctionner le projet :
 
 |Package                         |Version  |
 |--------------------------------|---------|
