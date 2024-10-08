@@ -1,27 +1,47 @@
-# HotTakes
+# PIIQUANTE
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.4.
+## Projet 6 du parcours Développeur Web d'Openclassrooms.
 
-## Development server
+Le client, la marque de condiments à base de piment Piiquante, veut développer une application web de critique des sauces piquantes appelée « Hot Takes ».
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+![Image du site](back/images/sample.png)
 
-## Code scaffolding
+## Objectifs
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Gérer le backend en MVP de l'application en créant une API avec javascript.
+- Utiliser une base de donnée Mongodb pour enregistrer les utilisateurs, leurs sauces et les avis (likes, dislikes).
+- Sécuriser l'API.
+- Mettre en œuvre des opérations CRUD de manière sécurisée.
 
-## Build
+## Front
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Cloner le repo
+- Ouvrir le terminal dans le dossier front et exécuter `npm install` pour installer les dépendances.
+- Exécuter `npm install node-sass` pour installer sass.
+- Le projet a été généré avec Angular CLI version 7.0.2.
+- Démarrer `ng serve`.
+- Rendez-vous sur http://localhost:4200.
 
-## Running unit tests
+## Back
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- Ouvrir le terminal dans le dossier back.
+- Charger le package nodemon : `npm install -g nodemon`.
+- Lancer le serveur: `nodemon server`.
 
-## Running end-to-end tests
+## Note technique
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- La partie front a été créé avec angular CLI version 13.2.4. 
+- Angular a dû être mis à jour pour être compatible avec la version node disponible sur le moment. Voici la liste des versions des dépendances à utiliser pour faire fonctionner le projet :
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+|Package                         |Version  |
+|--------------------------------|---------|
+|@angular-devkit/architect       |0.1700.5 |
+|@angular-devkit/build-angular   |17.0.5   |
+|@angular-devkit/core            |17.0.5   |
+|@angular-devkit/schematics      |17.0.5   |
+|@angular/cdk                    |13.2.4   |
+|@angular/material               |13.2.4   |
+|@schematics/angular             |17.0.5   |
+|rxjs                            |7.5.4    |
+|typescript                      |5.2.2    |
+|zone.js                         |0.14.2   |
