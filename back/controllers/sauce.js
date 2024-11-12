@@ -33,12 +33,6 @@ exports.updateSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     // On crée l'objet sauce à mettre à jour
     .then((sauce) => {
-      //   // Vérification si l'utilisateur authentifié est bien le créateur de la sauce
-      //   if (sauce.userId !== req.auth.userId) {
-      //     return res.status(403).json({ message: "Requête non autorisée" }); // L'utilisateur n'est pas le créateur
-      //   }
-      //   // Procéder à la mise à jour si c'est bien le créateur
-      console.log("req.auth.userId :", req.auth.userId);
       const sauceObject = req.file
         ? // Si req.file existe alors on crée l'url de celui ci dans un nouvel objet pour le mettre dans la base de donnée
           {
