@@ -2,7 +2,6 @@ const Sauce = require("../models/sauce");
 
 exports.likeSauce = (req, res, next) => {
   // Mise à jour des likes
-  console.log("req.body.like :", req.body.like);
   if (req.body.like === 1) {
     Sauce.updateOne(
       { _id: req.params.id },
