@@ -15,14 +15,16 @@ exports.signup = (req, res, next) => {
       user
         .save()
         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-        .catch((error) => res.status(400).json({ error }));
+        .catch((error) => {
+          console.log("Erreur lors de l'opération :", error);
+          res.status(400).json({ error });
+        });
     })
     .catch((error) => res.status(500).json({ error }));
 };
 
 exports.login = (req, res, next) => {
   // Recherche du mail avec la méthode findOne
-  console.log("req.body", req.body);
 
   User.findOne({ email: req.body.email })
     .then((user) => {
@@ -43,8 +45,8 @@ exports.login = (req, res, next) => {
               .json({ message: "Paire login/mot de passe incorrecte" });
           }
 
-          // Création du token avec jwt et RANDOM_TOKEN_SECRET
-          const token = jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
+          // Création du token avec jwt et la variable d'environnement
+          const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
             expiresIn: "24h",
           });
 
