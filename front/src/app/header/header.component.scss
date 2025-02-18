@@ -86,6 +86,7 @@ a {
   .left-nav,
   .right-nav {
     order: 1;
+    width: 100%;
   }
 
   .left-nav ul {
@@ -94,5 +95,10 @@ a {
 
   .logo {
     margin-bottom: 40px;
+  }
+
+  .sauce-container img {
+    width: 100%;
+    object-fit: cover;
   }
 }
