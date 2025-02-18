@@ -78,7 +78,7 @@ a {
   text-decoration: underline;
 }
 
-@media screen and (min-width: 390px) {
+@media screen and (max-width: 390px) {
   nav {
     flex-direction: column;
   }
