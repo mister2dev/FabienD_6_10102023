@@ -40,7 +40,8 @@ h5 {
   margin-right: 1em;
 }
 
-.left-nav, .right-nav {
+.left-nav,
+.right-nav {
   align-self: center;
   width: 30%;
 }
@@ -75,4 +76,23 @@ a {
 .active {
   font-weight: 700;
   text-decoration: underline;
+}
+
+@media screen and (min-width: 390px) {
+  nav {
+    flex-direction: column;
+  }
+
+  .left-nav,
+  .right-nav {
+    order: 1;
+  }
+
+  .left-nav ul {
+    justify-content: space-between;
+  }
+
+  .logo {
+    margin-bottom: 40px;
+  }
 }

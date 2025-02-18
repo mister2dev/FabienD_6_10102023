@@ -12,9 +12,7 @@ exports.createSauce = (req, res, next) => {
     ...sauceObject,
     userId: req.auth.userId,
     // Définition de l'adresse de l'image
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`,
+    imageUrl: `https://${req.get("host")}/images/${req.file.filename}`,
     // Initialisation des likes
     likes: 0,
     dislikes: 0,
@@ -44,9 +42,7 @@ exports.updateSauce = (req, res, next) => {
         ? // Si req.file existe alors on crée l'url de celui ci dans un nouvel objet pour le mettre dans la base de donnée
           {
             ...JSON.parse(req.body.sauce),
-            imageUrl: `${req.protocol}://${req.get("host")}/images/${
-              req.file.filename
-            }`,
+            imageUrl: `https://${req.get("host")}/images/${req.file.filename}`,
           }
         : // Sinon on recupére le reste des informations de sauce
           { ...req.body };
