@@ -27,7 +27,8 @@
   }
 }
 
-.likes, .dislikes {
+.likes,
+.dislikes {
   margin: 0 0.4em;
 }
 
@@ -63,5 +64,12 @@
 .control-buttons {
   button {
     margin: 1em 1em 0 0;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  .sauce-container img {
+    width: 100%;
+    object-fit: cover;
   }
 }

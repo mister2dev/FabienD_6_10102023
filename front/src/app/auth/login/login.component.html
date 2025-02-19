@@ -11,3 +11,6 @@
   <button mat-raised-button color="primary" [disabled]="loginForm.invalid" (click)="onLogin()">LOGIN</button>
   <p class="text-danger" *ngIf="errorMsg">{{ errorMsg }}</p>
 </form>
+<div class="alert-text">
+  "Votre mot de passe doit contenir au minimum 8 caractères, dont une majuscule, une minuscule et un chiffre."
+</div>
