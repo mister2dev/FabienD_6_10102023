@@ -9,7 +9,6 @@ exports.likeSauce = (req, res, next) => {
     )
       .then(() => res.status(200).json({ message: "Like ajouté !" }))
       .catch((error) => res.status(400).json({ error }));
-
     // Mise à jour des dislikes
   } else if (req.body.like === -1) {
     Sauce.updateOne(
