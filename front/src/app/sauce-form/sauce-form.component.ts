@@ -105,7 +105,7 @@ export class SauceFormComponent implements OnInit {
         catchError(error => {
           console.error(error);
           this.loading = false;
-          this.errorMsg = error.message;
+          this.errorMsg = error;
           return EMPTY;
         })
       ).subscribe();
@@ -119,7 +119,7 @@ export class SauceFormComponent implements OnInit {
         catchError(error => {
           console.error(error);
           this.loading = false;
-          this.errorMsg = error.message;
+          this.errorMsg = error;
           return EMPTY;
         })
       ).subscribe();

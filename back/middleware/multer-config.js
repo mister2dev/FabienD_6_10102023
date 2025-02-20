@@ -21,7 +21,7 @@
 
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const cloudinary = require("../cloudinaryConfig");
+const cloudinary = require("../services/cloudinaryConfig");
 
 // Définir le stockage sur Cloudinary
 const storage = new CloudinaryStorage({
@@ -35,4 +35,4 @@ const storage = new CloudinaryStorage({
 
 // Initialisation de Multer
 
-module.exports = multer({ storage: storage }).single("image")
+module.exports = multer({ storage: storage }).single("image");

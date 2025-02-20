@@ -1,16 +1,51 @@
 const Sauce = require("../models/sauce");
-const fs = require("fs");
-const cloudinary = require("../cloudinaryConfig");
+// const fs = require("fs");
+const cloudinary = require("../services/cloudinaryConfig");
+const { moderateText } = require("../services/moderationServicePerspective"); // Import du service Perspective
 
 // CRUD des sauces
 //-----------------------------------------
 
-exports.createSauce = (req, res, next) => {
+exports.createSauce = async (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   delete sauceObject._id; // Suppression de l'id car mongodb va recréer un nouvel id pour la nouvelle sauvegarde
   delete sauceObject.userId; // Suppression du userId envoyé dans la requête (pour éviter des modifications non autorisées)
 
   console.log("URL de l'image Cloudinary :", req.file);
+
+  // Modération du texte avec Perspective API
+  try {
+    const moderationResult = await moderateText(
+      sauceObject.name +
+        " " +
+        sauceObject.manufacturer +
+        " " +
+        sauceObject.description +
+        " " +
+        sauceObject.mainPepper
+    );
+    console.log("Résultat de la modération :", moderationResult);
+
+    // Analyse du score de toxicité
+    const toxicity =
+      moderationResult.attributeScores.TOXICITY.summaryScore.value;
+    if (toxicity > 0.3) {
+      console.log("Score de toxicité :", toxicity);
+
+      // Supprimer l'image sur Cloudinary si la modération échoue
+      const imageUrl = req.file.path;
+      const publicId = imageUrl.split("/").slice(-2).join("/").split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+
+      return res.status(400).json({
+        message: "Le contenu est inapproprié et ne peut pas être publié.",
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Erreur lors de la modération du contenu." });
+  }
 
   const sauce = new Sauce({
     ...sauceObject,
@@ -33,56 +68,83 @@ exports.createSauce = (req, res, next) => {
 
 //------------------------------------------
 
-exports.updateSauce = (req, res, next) => {
-  // Recherche de la sauce avec l'id
-  Sauce.findOne({ _id: req.params.id })
-    // On crée l'objet sauce à mettre à jour
-    .then((sauce) => {
-      // Vérification si l'utilisateur authentifié est bien le propriétaire de la sauce
-      if (sauce.userId !== req.auth.userId) {
-        return res.status(403).json({ message: "Action non autorisée." });
+exports.updateSauce = async (req, res, next) => {
+  try {
+    // Recherche de la sauce avec l'id
+    const sauce = await Sauce.findOne({ _id: req.params.id });
+
+    // Vérification si l'utilisateur authentifié est bien le propriétaire de la sauce
+    if (sauce.userId !== req.auth.userId) {
+      return res.status(403).json({ message: "Action non autorisée." });
+    }
+
+    console.log("URL de l'image Cloudinary :", req.file);
+
+    const sauceObject = req.file
+      ? {
+          ...JSON.parse(req.body.sauce),
+          imageUrl: req.file.path,
+        }
+      : { ...req.body };
+
+    delete sauceObject.userId; // Suppression du userId envoyé dans la requête
+
+    // Modération du texte avec Perspective API
+    try {
+      const moderationResult = await moderateText(
+        sauceObject.name +
+          " " +
+          sauceObject.manufacturer +
+          " " +
+          sauceObject.description +
+          " " +
+          sauceObject.mainPepper
+      );
+
+      console.log("Résultat de la modération :", moderationResult);
+
+      if (moderationResult && moderationResult.attributeScores) {
+        const toxicity =
+          moderationResult.attributeScores.TOXICITY.summaryScore.value;
+
+        console.log("Score de toxicité :", toxicity);
+
+        if (toxicity > 0.3) {
+          return res.status(400).json({
+            message: "Le contenu est inapproprié et ne peut pas être publié.",
+          });
+        }
+      } else {
+        console.error("Réponse de modération inattendue :", moderationResult);
+        return res.status(500).json({
+          message:
+            "Erreur lors de la modération du contenu : réponse inattendue.",
+        });
       }
-      console.log("URL de l'image Cloudinary :", req.file);
+    } catch (error) {
+      console.error("Erreur lors de la modération du contenu :", error);
+      return res
+        .status(500)
+        .json({ message: "Erreur lors de la modération du contenu." });
+    }
 
-      const sauceObject = req.file
-        ? // Si req.file existe alors on crée l'url de celui ci dans un nouvel objet pour le mettre dans la base de donnée
-          {
-            ...JSON.parse(req.body.sauce),
-            // imageUrl: `https://${req.get("host")}/images/${req.file.filename}`, version local
-            imageUrl: req.file.path,
-          }
-        : // Sinon on recupére le reste des informations de sauce
-          { ...req.body };
+    // Si une nouvelle image est fournie, supprimer l'ancienne image
+    if (req.file) {
+      const imageUrl = sauce.imageUrl;
+      const publicId = imageUrl.split("/").slice(-2).join("/").split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
 
-      // Suppression du userId envoyé dans la requête (pour éviter des modifications non autorisées)
-      delete sauceObject.userId;
+    await Sauce.updateOne(
+      { _id: req.params.id },
+      { ...sauceObject, _id: req.params.id }
+    );
 
-      // Si une nouvelle image est fournie, supprimer l'ancienne image
-      // if (req.file) {
-      //   // On isole le nom du fichier à supprimer du dossier images
-      //   const filename = sauce.imageUrl.split("/images/")[1];
-      //   fs.unlink(`images/${filename}`, (err) => {
-      //     if (err) console.log(err);
-      //   });
-      // }
-
-      // Si une nouvelle image est fournie, supprimer l'ancienne image
-      if (req.file) {
-        // On isole le nom du fichier à supprimer du dossier images
-        const imageUrl = sauce.imageUrl;
-        const publicId = imageUrl.split("/").slice(-2).join("/").split(".")[0];
-        cloudinary.uploader.destroy(publicId);
-      }
-
-      Sauce.updateOne(
-        // Les propriétés de sauceObject sont copiées dans un nouvel objet pour procéder à la mise à jour
-        { _id: req.params.id },
-        { ...sauceObject, _id: req.params.id }
-      )
-        .then(() => res.status(200).json({ message: "Sauce modifiée !" }))
-        .catch((error) => res.status(400).json({ error }));
-    })
-    .catch((error) => res.status(400).json({ error }));
+    res.status(200).json({ message: "Sauce modifiée !" });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de la sauce :", error);
+    res.status(400).json({ error });
+  }
 };
 
 //---------------------------------------------
