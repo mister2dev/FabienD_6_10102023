@@ -1,5 +1,6 @@
 const Sauce = require("../models/sauce");
 const fs = require("fs");
+const cloudinary = require("../cloudinaryConfig");
 
 // CRUD des sauces
 //-----------------------------------------
@@ -8,9 +9,9 @@ exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   delete sauceObject._id; // Suppression de l'id car mongodb va recréer un nouvel id pour la nouvelle sauvegarde
   delete sauceObject.userId; // Suppression du userId envoyé dans la requête (pour éviter des modifications non autorisées)
-  
-  console.log("URL de l'image Cloudinary :", req.file); 
-  
+
+  console.log("URL de l'image Cloudinary :", req.file);
+
   const sauce = new Sauce({
     ...sauceObject,
     userId: req.auth.userId,
@@ -41,7 +42,7 @@ exports.updateSauce = (req, res, next) => {
       if (sauce.userId !== req.auth.userId) {
         return res.status(403).json({ message: "Action non autorisée." });
       }
-      console.log("URL de l'image Cloudinary :", req.file); 
+      console.log("URL de l'image Cloudinary :", req.file);
 
       const sauceObject = req.file
         ? // Si req.file existe alors on crée l'url de celui ci dans un nouvel objet pour le mettre dans la base de donnée
@@ -65,16 +66,13 @@ exports.updateSauce = (req, res, next) => {
       //   });
       // }
 
-            // Si une nouvelle image est fournie, supprimer l'ancienne image
+      // Si une nouvelle image est fournie, supprimer l'ancienne image
       if (req.file) {
         // On isole le nom du fichier à supprimer du dossier images
         const imageUrl = sauce.imageUrl;
-        const publicId =  imageUrl.split("/").slice(-2).join("/").split(".")[0];
-
-        console.log("Suppression de l'image Cloudinary:", publicId);
+        const publicId = imageUrl.split("/").slice(-2).join("/").split(".")[0];
         cloudinary.uploader.destroy(publicId);
       }
-
 
       Sauce.updateOne(
         // Les propriétés de sauceObject sont copiées dans un nouvel objet pour procéder à la mise à jour
@@ -96,6 +94,18 @@ exports.deleteSauce = (req, res, next) => {
       if (sauce.userId !== req.auth.userId) {
         return res.status(403).json({ message: "Action non autorisée." });
       }
+
+      // Récupération de l'identifiant public de l'image sur Cloudinary
+      const imageUrl = sauce.imageUrl;
+      const publicId = imageUrl.split("/").slice(-2).join("/").split(".")[0];
+      console.log("Suppression de l'image Cloudinary :", publicId);
+
+      // Suppression de l'image sur Cloudinary
+      cloudinary.uploader.destroy(publicId, () => {
+        Sauce.deleteOne({ _id: req.params.id })
+          .then(() => res.status(200).json({ message: "Sauce supprimée !" }))
+          .catch((error) => res.status(400).json({ error }));
+      });
 
       // Suppression de l'image et suppression de la sauce dans mongodb
       // const filename = sauce.imageUrl.split("/images/")[1];
