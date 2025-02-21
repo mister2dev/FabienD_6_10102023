@@ -1,7 +1,10 @@
-const Sauce = require("../models/sauce");
 // const fs = require("fs");
+const Sauce = require("../models/sauce");
 const cloudinary = require("../services/cloudinaryConfig");
 const { moderateText } = require("../services/moderationServicePerspective"); // Import du service Perspective
+const {
+  validateSauceImage,
+} = require("../services/moderationServiceClarifaiSauce");
 
 // CRUD des sauces
 //-----------------------------------------
@@ -10,10 +13,11 @@ exports.createSauce = async (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   delete sauceObject._id; // Suppression de l'id car mongodb va recréer un nouvel id pour la nouvelle sauvegarde
   delete sauceObject.userId; // Suppression du userId envoyé dans la requête (pour éviter des modifications non autorisées)
+  const imageUrl = req.file.path;
 
   console.log("URL de l'image Cloudinary :", req.file);
 
-  // Modération du texte avec Perspective API
+  // Modération du texte avec Perspective API----------------------------
   try {
     const moderationResult = await moderateText(
       sauceObject.name +
@@ -45,6 +49,24 @@ exports.createSauce = async (req, res, next) => {
     return res
       .status(500)
       .json({ message: "Erreur lors de la modération du contenu." });
+  }
+
+  // 🌟 Validation de l'image avec Clarifai
+  try {
+    const isValidImage = await validateSauceImage(imageUrl);
+
+    if (!isValidImage) {
+      const publicId = imageUrl.split("/").slice(-2).join("/").split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+
+      return res.status(400).json({
+        message: "L'image doit contenir uniquement une bouteille de sauce.",
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Erreur lors de la validation de l'image." });
   }
 
   const sauce = new Sauce({
@@ -89,7 +111,35 @@ exports.updateSauce = async (req, res, next) => {
 
     delete sauceObject.userId; // Suppression du userId envoyé dans la requête
 
-    // Modération du texte avec Perspective API
+    // 🌟 **Validation de l'image avec Clarifai** 🌟
+    if (req.file) {
+      const imageUrl = req.file.path;
+
+      try {
+        const isValidImage = await validateSauceImage(imageUrl);
+
+        if (!isValidImage) {
+          // Supprimer l'image sur Cloudinary si la validation échoue
+          const publicId = imageUrl
+            .split("/")
+            .slice(-2)
+            .join("/")
+            .split(".")[0];
+          await cloudinary.uploader.destroy(publicId);
+
+          return res.status(400).json({
+            message: "L'image doit contenir uniquement une bouteille de sauce.",
+          });
+        }
+      } catch (error) {
+        console.error("Erreur lors de la validation de l'image :", error);
+        return res
+          .status(500)
+          .json({ message: "Erreur lors de la validation de l'image." });
+      }
+    }
+
+    // Modération du texte avec Perspective API-----------------------------------
     try {
       const moderationResult = await moderateText(
         sauceObject.name +
