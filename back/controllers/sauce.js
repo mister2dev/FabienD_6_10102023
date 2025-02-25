@@ -5,13 +5,13 @@ const {
   validateSauceImage,
 } = require("../services/moderationServiceClarifaiSauce");
 
-// 🔥 Fonction utilitaire pour supprimer une image sur Cloudinary
+// Fonction utilitaire pour supprimer une image sur Cloudinary
 async function deleteImage(imageUrl) {
   const publicId = imageUrl.split("/").slice(-2).join("/").split(".")[0];
   await cloudinary.uploader.destroy(publicId);
 }
 
-// ✨ Fonction réutilisable de modération du texte avec Perspective API
+// Fonction réutilisable de modération du texte avec Perspective API
 async function moderateTextContent(sauceObject, imageUrl, res) {
   try {
     const moderationResult = await moderateText(
@@ -40,7 +40,7 @@ async function moderateTextContent(sauceObject, imageUrl, res) {
   }
 }
 
-// ✨ Fonction réutilisable de modération de l'image avec Clarifai
+// Fonction réutilisable de modération de l'image avec Clarifai
 async function moderateImageContent(imageUrl, res) {
   try {
     const isValidImage = await validateSauceImage(imageUrl);
@@ -62,7 +62,7 @@ async function moderateImageContent(imageUrl, res) {
   }
 }
 
-// 🚀 Fonction principale pour créer une nouvelle sauce
+// Fonction principale pour créer une nouvelle sauce
 exports.createSauce = async (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   delete sauceObject._id;
@@ -71,15 +71,15 @@ exports.createSauce = async (req, res, next) => {
   const imageUrl = req.file.path;
   console.log("Image temporaire locale :", imageUrl);
 
-  // 🕵️ Modération du texte
+  // Modération du texte
   const isTextValid = await moderateTextContent(sauceObject, imageUrl, res);
   if (!isTextValid) return;
 
-  // 🌟 Modération de l'image
+  // Modération de l'image
   const isImageValid = await moderateImageContent(imageUrl, res);
   if (!isImageValid) return;
 
-  // 💾 Sauvegarde de la sauce après validation
+  // Sauvegarde de la sauce après validation
   const sauce = new Sauce({
     ...sauceObject,
     userId: req.auth.userId,
@@ -123,11 +123,11 @@ exports.updateSauce = async (req, res, next) => {
     const imageUrl = req.file ? req.file.path : sauce.imageUrl;
     console.log("URL de l'image Cloudinary :", imageUrl);
 
-    // 🕵️ Modération du texte (uniquement si texte mis à jour)
+    // Modération du texte (uniquement si texte mis à jour)
     const isTextValid = await moderateTextContent(sauceObject, imageUrl, res);
     if (!isTextValid) return;
 
-    // 🌟 Modération de l'image (si une nouvelle image est envoyée)
+    // Modération de l'image (si une nouvelle image est envoyée)
     if (req.file) {
       const isImageValid = await moderateImageContent(imageUrl, res);
       if (!isImageValid) return;
