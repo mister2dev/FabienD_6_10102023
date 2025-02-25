@@ -14,6 +14,7 @@ export class SignupComponent implements OnInit {
   signupForm!: UntypedFormGroup;
   loading!: boolean;
   errorMsg!: string;
+  loadingMessage: string = '';
 
   constructor(private formBuilder: UntypedFormBuilder,
               private auth: AuthService,
@@ -28,10 +29,13 @@ export class SignupComponent implements OnInit {
 
   onSignup() {
     this.loading = true;
+    this.loadingMessage = 'Ce site étant hébergé sur un serveur gratuit, la connexion peut prendre quelques secondes...';
     const email = this.signupForm.get('email')!.value;
     const password = this.signupForm.get('password')!.value;
+    
     this.auth.createUser(email, password).pipe(
-      switchMap(() => this.auth.loginUser(email, password)),
+      switchMap(() => 
+        this.auth.loginUser(email, password)),
       tap(() => {
         this.loading = false;
         this.router.navigate(['/sauces']);

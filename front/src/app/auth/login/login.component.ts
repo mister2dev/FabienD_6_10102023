@@ -14,6 +14,7 @@ export class LoginComponent implements OnInit {
   loginForm!: UntypedFormGroup;
   loading!: boolean;
   errorMsg!: string;
+  loadingMessage: string = '';
 
   constructor(private formBuilder: UntypedFormBuilder,
               private auth: AuthService,
@@ -28,6 +29,7 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     this.loading = true;
+    this.loadingMessage = 'Ce site étant hébergé sur un serveur gratuit, la connexion peut prendre quelques secondes...';
     const email = this.loginForm.get('email')!.value;
     const password = this.loginForm.get('password')!.value;
     this.auth.loginUser(email, password).pipe(
