@@ -3,6 +3,7 @@
   img {
     max-height: 70vh;
     flex: 1;
+    object-fit: contain;
   }
 }
 
@@ -69,7 +70,7 @@
 
 @media screen and (max-width: 390px) {
   .sauce-container img {
-    width: 100%;
+    width: 30%;
     object-fit: cover;
   }
 }
