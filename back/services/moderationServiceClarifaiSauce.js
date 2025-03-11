@@ -2,7 +2,7 @@ const { ClarifaiStub, grpc } = require("clarifai-nodejs-grpc");
 
 const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
-metadata.set("authorization", "Key a67d62e342934c30aeb2ad29841d171c");
+metadata.set("authorization", "Key process.env.CLARIFAI_API_KEY");
 
 // Fonction de validation d'image
 async function validateSauceImage(imageUrl) {
