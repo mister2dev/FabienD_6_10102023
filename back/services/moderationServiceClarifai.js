@@ -2,7 +2,7 @@ const Clarifai = require("clarifai");
 
 // Initialiser Clarifai avec ta clé API
 const app = new Clarifai.App({
-  apiKey: "a67d62e342934c30aeb2ad29841d171c", // Remplace par ta clé API Clarifai
+  apiKey: "process.env.CLARIFAI_API_KEY",
 });
 
 // Fonction de modération d'image
