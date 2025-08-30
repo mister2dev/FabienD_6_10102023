@@ -9,6 +9,10 @@ async function validateSauceImage(imageUrl) {
   return new Promise((resolve, reject) => {
     stub.PostModelOutputs(
       {
+        user_app_id: {
+          user_id: "clarifai",
+          app_id: "main"
+        },
         model_id: "general-image-recognition",
         inputs: [{ data: { image: { url: imageUrl } } }],
       },
