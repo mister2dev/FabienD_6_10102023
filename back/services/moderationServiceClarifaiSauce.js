@@ -11,10 +11,20 @@ async function validateSauceImage(imageUrl) {
       {
         user_app_id: {
           user_id: "clarifai",
-          app_id: "main"
+          app_id: "main",
         },
         model_id: "general-image-recognition",
-        inputs: [{ data: { image: { url: imageUrl } } }],
+        version_id: "aa7f35c01e0642fda5cf400f543e7c40", // Ajouté depuis l'exemple officiel
+        inputs: [
+          {
+            data: {
+              image: {
+                url: imageUrl,
+                allow_duplicate_url: true, // Important si tu testes plusieurs fois la même image
+              },
+            },
+          },
+        ],
       },
       metadata,
       (err, response) => {
