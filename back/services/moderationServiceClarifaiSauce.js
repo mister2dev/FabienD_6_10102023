@@ -2,7 +2,7 @@ const { ClarifaiStub, grpc } = require("clarifai-nodejs-grpc");
 
 const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
-metadata.set("authorization", "Key" + process.env.CLARIFAI_PAT);
+metadata.set("authorization", "Key " + process.env.CLARIFAI_PAT);
 
 // Fonction de validation d'image
 async function validateSauceImage(imageUrl) {
@@ -10,8 +10,8 @@ async function validateSauceImage(imageUrl) {
     stub.PostModelOutputs(
       {
         user_app_id: {
-          user_id: "clarifai",
-          app_id: "main",
+          user_id: "z2xq4s6u8f6g",
+          app_id: "my-first-application-7nikyr",
         },
         model_id: "general-image-recognition",
         version_id: "aa7f35c01e0642fda5cf400f543e7c40", // Ajouté depuis l'exemple officiel
